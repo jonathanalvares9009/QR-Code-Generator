@@ -7,7 +7,7 @@ def test_is_mode_numeric():
     assert mode == Mode.NUMERIC
 
 def test_is_mode_alphanumeric():
-    data = "ABC"
+    data = "ABC$%90"
     mode = get_encoding_mode(data)
     assert mode == Mode.ALPHANUMERIC
 

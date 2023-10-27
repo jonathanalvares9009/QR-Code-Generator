@@ -48,3 +48,10 @@ def get_encoded_alphanumeric_payload(data: str) -> str:
         else:
             payload += bin(get_alphanumeric_number_representation(group[0]))[2:].zfill(11)
     return payload
+
+def get_encoded_byte_payload(data: str) -> str:
+    """Returns the encoded payload for byte mode"""
+    payload = ""
+    for character in data:
+        payload += bin(ord(character))[2:].zfill(8)
+    return payload

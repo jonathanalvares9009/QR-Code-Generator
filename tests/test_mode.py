@@ -10,3 +10,8 @@ def test_is_mode_alphanumeric():
     data = "ABC"
     mode = get_encoding_mode(data)
     assert mode == Mode.ALPHANUMERIC
+
+def test_is_mode_byte():
+    data = "ÕÉē90ABC"
+    mode = get_encoding_mode(data)
+    assert mode == Mode.BYTE

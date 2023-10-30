@@ -1,4 +1,4 @@
-from src.models import Mode
+from src.models import Mode, Level
 
 def get_mode_indicator(mode: Mode) -> str:
     return {
@@ -7,6 +7,15 @@ def get_mode_indicator(mode: Mode) -> str:
         Mode.BYTE: '0100',
         Mode.KANJI: '1000',
     }[mode]
+
+# Number of codewords for version 4
+def get_number_of_codewords() -> int:
+    return {
+        Level.L: 80,
+        Level.M: 64,
+        Level.Q: 48,
+        Level.H: 36,
+    }
 
 def get_encoded_numeric_payload(data: str) -> str:
     """Returns the encoded payload for numeric mode"""

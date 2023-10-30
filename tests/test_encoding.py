@@ -1,5 +1,5 @@
 from src.models import Mode
-from src.encoding import get_encoded_alphanumeric_payload, get_encoded_numeric_payload, get_encoded_byte_payload, get_mode_indicator
+from src.encoding import get_encoded_alphanumeric_payload, get_encoded_kanji_payload, get_encoded_numeric_payload, get_encoded_byte_payload, get_mode_indicator
 
 def test_is_encoding_mode_indicator_numerical():
     assert get_mode_indicator(Mode.NUMERIC) == '0001'
@@ -23,3 +23,6 @@ def test_is_valid_encoded_alphanumeric_payload():
 
 def test_is_valid_encoded_byte_payload():
     assert get_encoded_byte_payload("Hello") == "0100100001100101011011000110110001101111"
+
+def test_is_valid_encoded_kanji_payload():
+    assert get_encoded_kanji_payload("覚") == "0011011101111"

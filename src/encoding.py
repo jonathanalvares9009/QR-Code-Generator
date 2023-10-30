@@ -55,3 +55,22 @@ def get_encoded_byte_payload(data: str) -> str:
     for character in data:
         payload += bin(ord(character))[2:].zfill(8)
     return payload
+
+def get_encoded_kanji_payload(data: str) -> str:
+    """Returns the encoded payload for kanji mode"""
+    payload = ""
+    for character in data:
+        byte = character.encode('shift-jis').hex()
+        # Check if the character is between 0x8140 and 0x9FFC, 
+        # subtract 0x8140; otherwise, subtract 0xC140.
+        updated_byte = int(byte, 16) - (0x8140 if 0x8140 <= int(byte, 16) <= 0x9FFC else 0xC140)
+        # Split the byte into two parts
+        first_part = updated_byte >> 8
+        second_part = updated_byte & 0xFF
+        # Multiply the most significant byte by 0xC0, 
+        # add the least significant byte to the result, 
+        # and convert the result into a 13 bit binary string.
+        payload += bin((first_part * 0xC0) + second_part)[2:].zfill(13)
+    return payload
+
+print(get_encoded_kanji_payload("覚"))

@@ -10,13 +10,13 @@ def get_mode_indicator(mode: Mode) -> str:
     }[mode]
 
 # Number of codewords for version 4
-def get_number_of_codewords() -> int:
+def get_number_of_codewords(level: Level) -> int:
     return {
         Level.L: 80,
         Level.M: 64,
         Level.Q: 48,
         Level.H: 36,
-    }
+    }[level]
 
 # Get the character count indicator
 def get_character_indicator(data: str, mode: Mode) -> str:
@@ -95,3 +95,43 @@ def get_encoded_kanji_payload(data: str) -> str:
         # and convert the result into a 13 bit binary string.
         payload += bin((first_part * 0xC0) + second_part)[2:].zfill(13)
     return payload
+
+def get_encoded_data(data: str, level: Level = Level.M) -> str:
+    """Returns the encoded data"""
+    # Get the encoding mode
+    mode = get_encoding_mode(data)
+    # Get the mode indicator
+    mode_indicator = get_mode_indicator(mode)
+    # Get the character count indicator
+    character_count_indicator = get_character_indicator(data, mode)
+    # Get the payload
+    encoded_payload = ""
+    if mode == Mode.NUMERIC:
+        encoded_payload = get_encoded_numeric_payload(data)
+    elif mode == Mode.ALPHANUMERIC:
+        encoded_payload = get_encoded_alphanumeric_payload(data)
+    elif mode == Mode.BYTE:
+        encoded_payload = get_encoded_byte_payload(data)
+    elif mode == Mode.KANJI:
+        encoded_payload = get_encoded_kanji_payload(data)
+    
+    encoded_data = mode_indicator + character_count_indicator + encoded_payload
+    number_of_bits_required = get_number_of_codewords(level) * 8
+    length_of_fixed_payload = number_of_bits_required - len(encoded_data)
+    
+    # Add upto 4 zeros to the end of the payload
+    if length_of_fixed_payload > 0:
+        encoded_data += '0' * min(length_of_fixed_payload, 4)
+
+    # Add more zeros to the end of the payload if the length of the payload is not a multiple of 8
+    if len(encoded_data) % 8 != 0:
+        encoded_data += '0' * (8 - len(encoded_data) % 8)
+
+    # Alternate between adding 0xEC (11101100) and 0x11 (00010001) 
+    # to the end of the encoded data until it reaches the required length.
+    while len(encoded_data) < number_of_bits_required:
+        encoded_data += '11101100'
+        if len(encoded_data) < number_of_bits_required:
+            encoded_data += '00010001'
+
+    return encoded_data

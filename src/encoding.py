@@ -1,4 +1,5 @@
-from src.models import Mode, Level
+from src.encoding_mode import get_encoding_mode
+from src.models import Mode, Level, NumberOfBits
 
 def get_mode_indicator(mode: Mode) -> str:
     return {
@@ -16,6 +17,19 @@ def get_number_of_codewords() -> int:
         Level.Q: 48,
         Level.H: 36,
     }
+
+# Get the character count indicator
+def get_character_indicator(data: str, mode: Mode) -> str:
+    """Returns the character count indicator"""
+    if mode == Mode.NUMERIC:
+        return bin(len(data))[2:].zfill(10)
+    elif mode == Mode.ALPHANUMERIC:
+        return bin(len(data))[2:].zfill(9)
+    elif mode == Mode.BYTE:
+        return bin(len(data))[2:].zfill(8)
+    elif mode == Mode.KANJI:
+        return bin(len(data) // 2)[2:].zfill(8)
+
 
 def get_encoded_numeric_payload(data: str) -> str:
     """Returns the encoded payload for numeric mode"""
@@ -81,5 +95,3 @@ def get_encoded_kanji_payload(data: str) -> str:
         # and convert the result into a 13 bit binary string.
         payload += bin((first_part * 0xC0) + second_part)[2:].zfill(13)
     return payload
-
-print(get_encoded_kanji_payload("覚"))
